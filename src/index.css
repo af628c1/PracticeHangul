@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --color-hangul-bg: #FAFAFA;
+  --color-hangul-card: #FFFFFF;
+  --color-hangul-text: #1E293B;
+  --color-hangul-muted: #94A3B8;
+  --color-hangul-accent: #6366F1;
+  --color-hangul-accent-light: #E0E7FF;
+  --color-hangul-correct: #22C55E;
+  --color-hangul-correct-light: #DCFCE7;
+  --color-hangul-incorrect: #EF4444;
+  --color-hangul-incorrect-light: #FEE2E2;
+  --color-hangul-streak: #F59E0B;
+  --color-hangul-fun: #EC4899;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-hangul-bg);
+  color: var(--color-hangul-text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+.animate-pop {
+  animation: pop 0.3s ease-in-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out;
+}
