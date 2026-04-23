@@ -17,7 +17,6 @@ export default function TextInput({ onSubmit, disabled, feedback, hint }: Props)
     }
   }, [disabled])
 
-  // Reset value when feedback changes back to none (new question)
   useEffect(() => {
     if (feedback === 'none') {
       setValue('')
@@ -32,9 +31,9 @@ export default function TextInput({ onSubmit, disabled, feedback, hint }: Props)
   }
 
   const borderColor = {
-    none: 'border-gray-200 focus-within:border-hangul-accent',
-    correct: 'border-hangul-correct',
-    incorrect: 'border-hangul-incorrect',
+    none: 'border-gray-300 focus-within:border-ink',
+    correct: 'border-correct',
+    incorrect: 'border-incorrect',
   }[feedback]
 
   const animation = {
@@ -45,31 +44,36 @@ export default function TextInput({ onSubmit, disabled, feedback, hint }: Props)
 
   return (
     <div>
-      <form onSubmit={handleSubmit} className={`flex gap-2 ${animation}`}>
-        <input
-          ref={inputRef}
-          type="text"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          disabled={disabled}
-          placeholder="Type romanization..."
-          autoComplete="off"
-          autoCapitalize="off"
-          autoCorrect="off"
-          spellCheck={false}
-          className={`flex-1 py-3 px-4 rounded-xl border-2 text-lg outline-none transition-colors bg-hangul-card text-hangul-text placeholder:text-hangul-muted/50 ${borderColor}`}
-        />
+      <form onSubmit={handleSubmit} className={animation}>
+        <div
+          className={`border-2 rounded-lg bg-paper transition-colors ${borderColor}`}
+        >
+          <input
+            ref={inputRef}
+            type="text"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            disabled={disabled}
+            placeholder="type romanization..."
+            autoComplete="off"
+            autoCapitalize="off"
+            autoCorrect="off"
+            spellCheck={false}
+            className="w-full py-3 px-4 text-xl outline-none bg-transparent font-hand placeholder:text-muted-soft"
+          />
+        </div>
         <button
           type="submit"
           disabled={disabled || !value.trim()}
-          className="py-3 px-6 rounded-xl bg-hangul-accent text-white font-medium hover:bg-hangul-accent/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+          className="w-full mt-3 py-3 rounded-lg bg-ink text-paper font-hand font-bold text-xl border-2 border-ink hover:bg-ink-soft transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
         >
-          Check
+          Check Answer
         </button>
       </form>
       {hint && (
-        <p className="mt-3 text-sm text-hangul-streak animate-fade-in">
-          Hint: <span className="font-mono font-bold tracking-wider">{hint}</span>
+        <p className="mt-3 text-center font-hand text-lg text-k-red animate-fade-in">
+          Hint:{' '}
+          <span className="font-mono tracking-widest font-bold">{hint}</span>
         </p>
       )}
     </div>

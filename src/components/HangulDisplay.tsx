@@ -1,19 +1,26 @@
 interface Props {
   character: string
   subtitle?: string
+  size?: 'md' | 'lg' | 'xl'
 }
 
-export default function HangulDisplay({ character, subtitle }: Props) {
+export default function HangulDisplay({ character, subtitle, size = 'xl' }: Props) {
+  const sizeClass = {
+    md: 'text-6xl sm:text-7xl',
+    lg: 'text-7xl sm:text-8xl',
+    xl: 'text-8xl sm:text-9xl',
+  }[size]
+
   return (
-    <div className="bg-hangul-card rounded-2xl shadow-md border border-gray-100 p-8 mb-6 animate-fade-in">
+    <div className="text-center animate-fade-in">
       <div
         lang="ko"
-        className="text-[6rem] sm:text-[8rem] leading-none font-bold text-hangul-text select-none"
+        className={`${sizeClass} font-bold text-ink leading-none select-none tracking-tight`}
       >
         {character}
       </div>
       {subtitle && (
-        <p className="mt-3 text-hangul-muted text-lg">{subtitle}</p>
+        <p className="font-hand text-xl text-muted mt-4">= {subtitle}</p>
       )}
     </div>
   )

@@ -13,7 +13,7 @@ export default function ResultScreen({
   onRestart,
   onHome,
 }: Props) {
-  const percentage = Math.round((score / total) * 100)
+  const percentage = total > 0 ? Math.round((score / total) * 100) : 0
   const getMessage = () => {
     if (percentage === 100) return { text: 'Perfect!', emoji: '🎉' }
     if (percentage >= 80) return { text: 'Great job!', emoji: '🌟' }
@@ -25,33 +25,33 @@ export default function ResultScreen({
   const message = getMessage()
 
   return (
-    <div className="animate-slide-up text-center">
-      <div className="bg-hangul-card rounded-2xl shadow-lg border border-gray-100 p-8 max-w-md mx-auto">
+    <div className="animate-slide-up text-center max-w-md mx-auto">
+      <div className="bg-paper rounded-lg border-2 border-ink p-8 shadow-[4px_4px_0_#1a1a1a]">
         <div className="text-6xl mb-4">{message.emoji}</div>
-        <h2 className="text-2xl font-bold text-hangul-text mb-2">
+        <h2 className="font-hand font-bold text-3xl text-ink mb-2">
           {message.text}
         </h2>
-        <div className="text-5xl font-bold text-hangul-accent mb-2">
+        <div className="font-hand font-bold text-6xl text-k-red mb-2">
           {percentage}%
         </div>
-        <p className="text-hangul-muted mb-1">
+        <p className="font-hand text-xl text-muted mb-1">
           {score} out of {total} correct
         </p>
         {bestStreak > 1 && (
-          <p className="text-hangul-streak text-sm mb-6">
-            Best streak: {bestStreak} 🔥
+          <p className="font-hand text-lg text-k-red mb-2">
+            🔥 best streak: {bestStreak}
           </p>
         )}
         <div className="flex gap-3 mt-6">
           <button
             onClick={onRestart}
-            className="flex-1 py-3 px-4 rounded-xl bg-hangul-accent text-white font-medium hover:bg-hangul-accent/90 transition-colors cursor-pointer"
+            className="flex-1 py-3 rounded-lg bg-ink text-paper font-hand font-bold text-xl border-2 border-ink hover:bg-ink-soft transition-colors cursor-pointer"
           >
             Play Again
           </button>
           <button
             onClick={onHome}
-            className="flex-1 py-3 px-4 rounded-xl border-2 border-gray-200 text-hangul-text font-medium hover:border-hangul-accent hover:text-hangul-accent transition-colors cursor-pointer"
+            className="flex-1 py-3 rounded-lg bg-paper text-ink font-hand font-bold text-xl border-2 border-ink hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Home
           </button>

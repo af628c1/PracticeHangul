@@ -2,28 +2,31 @@ interface Props {
   label: string
   state: 'default' | 'correct' | 'incorrect' | 'disabled'
   onClick: () => void
+  size?: 'md' | 'lg'
 }
 
-export default function ChoiceButton({ label, state, onClick }: Props) {
+export default function ChoiceButton({ label, state, onClick, size = 'lg' }: Props) {
   const base =
-    'w-full py-4 px-6 rounded-xl text-lg font-medium border-2 transition-all cursor-pointer'
+    'w-full rounded-lg text-center font-bold transition-all cursor-pointer border-2 bg-paper'
+
+  const sizeClass = size === 'lg' ? 'py-6 text-3xl sm:text-4xl' : 'py-4 text-xl'
 
   const variants: Record<string, string> = {
     default:
-      'border-gray-200 bg-hangul-card text-hangul-text hover:border-hangul-accent hover:bg-hangul-accent-light active:scale-[0.98]',
+      'border-gray-300 text-ink hover:border-ink hover:-translate-y-0.5 active:scale-[0.98] shadow-sm',
     correct:
-      'border-hangul-correct bg-hangul-correct-light text-hangul-correct animate-pop cursor-default',
+      'border-correct bg-correct-soft text-correct animate-pop cursor-default',
     incorrect:
-      'border-hangul-incorrect bg-hangul-incorrect-light text-hangul-incorrect animate-shake cursor-default',
-    disabled:
-      'border-gray-100 bg-gray-50 text-hangul-muted cursor-default',
+      'border-incorrect bg-incorrect-soft text-incorrect animate-shake cursor-default',
+    disabled: 'border-gray-200 bg-gray-50 text-muted-soft cursor-default',
   }
 
   return (
     <button
-      className={`${base} ${variants[state]}`}
+      className={`${base} ${sizeClass} ${variants[state]}`}
       onClick={state === 'default' ? onClick : undefined}
       disabled={state !== 'default'}
+      lang="ko"
     >
       {label}
     </button>

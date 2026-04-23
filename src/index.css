@@ -1,27 +1,57 @@
 @import "tailwindcss";
 
 @theme {
-  --color-hangul-bg: #FAFAFA;
-  --color-hangul-card: #FFFFFF;
-  --color-hangul-text: #1E293B;
-  --color-hangul-muted: #94A3B8;
-  --color-hangul-accent: #6366F1;
-  --color-hangul-accent-light: #E0E7FF;
-  --color-hangul-correct: #22C55E;
-  --color-hangul-correct-light: #DCFCE7;
-  --color-hangul-incorrect: #EF4444;
-  --color-hangul-incorrect-light: #FEE2E2;
-  --color-hangul-streak: #F59E0B;
-  --color-hangul-fun: #EC4899;
+  /* V3 Minimal palette */
+  --color-ink: #1a1a1a;
+  --color-ink-soft: #333333;
+  --color-paper: #ffffff;
+  --color-paper-warm: #fafaf8;
+  --color-muted: #888888;
+  --color-muted-soft: #aaaaaa;
+  --color-line: #e8e8e8;
+  --color-line-dark: #1a1a1a;
+
+  /* Korean flag accents */
+  --color-k-red: #cd2e3a;
+  --color-k-red-soft: #f5e6e7;
+  --color-k-blue: #003478;
+  --color-k-blue-soft: #e6ebf2;
+
+  /* Feedback */
+  --color-correct: #4caf50;
+  --color-correct-soft: #f0faf0;
+  --color-incorrect: #e53935;
+  --color-incorrect-soft: #fdecea;
+
+  /* Fonts */
+  --font-hand: 'Caveat', cursive;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  background-color: var(--color-hangul-bg);
-  color: var(--color-hangul-text);
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--color-paper-warm);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.font-hand {
+  font-family: var(--font-hand);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
 }
 
 @keyframes shake {
@@ -34,7 +64,7 @@ body {
 
 @keyframes pop {
   0% { transform: scale(1); }
-  50% { transform: scale(1.08); }
+  50% { transform: scale(1.05); }
   100% { transform: scale(1); }
 }
 
