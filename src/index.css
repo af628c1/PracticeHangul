@@ -46,6 +46,11 @@ body {
   min-height: 100vh;
 }
 
+/* Keep the page still behind the sign-in dialog */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
 .font-hand {
   font-family: var(--font-hand);
 }

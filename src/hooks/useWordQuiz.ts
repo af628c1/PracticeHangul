@@ -81,7 +81,10 @@ function reducer(state: WordQuizState, action: Action): WordQuizState {
           score: state.score + 1,
           streak: newStreak,
           bestStreak: Math.max(state.bestStreak, newStreak),
-          answers: [...state.answers, { correct: true, userAnswer: action.answer }],
+          answers: [
+            ...state.answers,
+            { prompt: question.prompt, correct: true, userAnswer: action.answer },
+          ],
           status: 'reviewing',
           totalAnswered: state.totalAnswered + 1,
           hint: null,
@@ -99,7 +102,7 @@ function reducer(state: WordQuizState, action: Action): WordQuizState {
           streak: 0,
           answers: [
             ...state.answers,
-            { correct: false, userAnswer: action.answer },
+            { prompt: question.prompt, correct: false, userAnswer: action.answer },
           ],
           status: 'reviewing',
           totalAnswered: state.totalAnswered + 1,

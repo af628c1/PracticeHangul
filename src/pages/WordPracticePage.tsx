@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { QuestionCount } from '../types'
 import { useWordQuiz } from '../hooks/useWordQuiz'
-import { useStats } from '../hooks/useStats'
+import { useProgress } from '../hooks/useProgress'
 import HangulDisplay from '../components/HangulDisplay'
 import TextInput from '../components/TextInput'
 import ProgressBar from '../components/ProgressBar'
 import ResultScreen from '../components/ResultScreen'
+import TopBar from '../components/TopBar'
 
 const difficultyOptions = [
   { label: 'Easy', value: 1, desc: '1-syllable' },
@@ -23,21 +24,43 @@ const questionCounts: { label: string; value: QuestionCount }[] = [
 export default function WordPracticePage() {
   const navigate = useNavigate()
   const { state, start, submitAnswer, finish, restart } = useWordQuiz()
-  const { recordWord, recordStreak } = useStats()
+  const { progress, recordAnswer, recordStreak, recordSession, savePrefs } =
+    useProgress()
 
-  const [selectedDifficulty, setSelectedDifficulty] = useState(2)
-  const [selectedCount, setSelectedCount] = useState<QuestionCount>(10)
+  const [selectedDifficulty, setSelectedDifficulty] = useState(
+    () => progress.prefs.wordDifficulty,
+  )
+  const [selectedCount, setSelectedCount] = useState<QuestionCount>(
+    () => progress.prefs.wordCount,
+  )
 
+  // Track progress
+  const latestAnswer = state.answers.at(-1)
   useEffect(() => {
-    if (state.status === 'active' || state.status === 'reviewing') {
-      const q = state.questions[state.currentIndex]
-      if (q) recordWord(q.prompt)
+    if (latestAnswer) {
+      recordAnswer('words', latestAnswer.prompt, latestAnswer.correct)
     }
-  }, [state.status, state.currentIndex, state.questions, recordWord])
+  }, [latestAnswer, recordAnswer])
 
   useEffect(() => {
     if (state.bestStreak > 0) recordStreak(state.bestStreak)
   }, [state.bestStreak, recordStreak])
+
+  const finished = state.status === 'finished'
+  useEffect(() => {
+    if (finished && state.totalAnswered > 0) {
+      recordSession('words', {
+        score: state.score,
+        total: state.totalAnswered,
+        bestStreak: state.bestStreak,
+      })
+    }
+  }, [finished, state.score, state.totalAnswered, state.bestStreak, recordSession])
+
+  const handleStart = () => {
+    savePrefs({ wordDifficulty: selectedDifficulty, wordCount: selectedCount })
+    start(selectedDifficulty, selectedCount)
+  }
 
   // Setup screen
   if (state.status === 'setup') {
@@ -90,7 +113,7 @@ export default function WordPracticePage() {
           </div>
 
           <button
-            onClick={() => start(selectedDifficulty, selectedCount)}
+            onClick={handleStart}
             className="mt-4 py-4 rounded-lg bg-k-blue text-paper font-hand font-bold text-2xl border-2 border-ink shadow-[4px_4px_0_#1a1a1a] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#1a1a1a] transition-all cursor-pointer"
           >
             Start Practice →
@@ -201,21 +224,6 @@ export default function WordPracticePage() {
           </button>
         )}
       </div>
-    </div>
-  )
-}
-
-function TopBar({ title, onBack }: { title: string; onBack: () => void }) {
-  return (
-    <div className="flex items-center justify-between px-4 py-3 border-b border-line bg-paper">
-      <button
-        onClick={onBack}
-        className="font-hand text-lg text-muted hover:text-ink transition-colors cursor-pointer"
-      >
-        ← Back
-      </button>
-      <div className="font-hand font-bold text-xl text-ink">{title}</div>
-      <div className="w-12" />
     </div>
   )
 }
