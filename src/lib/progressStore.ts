@@ -12,6 +12,7 @@ import {
   withSession,
 } from './progress'
 import { progressKey, readJSON, removeKey, storedAccount, writeJSON } from './storage'
+import { track } from './track'
 
 /**
  * - device: guest, saved in this browser only
@@ -90,6 +91,7 @@ class ProgressStore {
     session: { score: number; total: number; bestStreak: number },
   ) => {
     this.commit(withSession(this.account, { mode, ...session }))
+    track('practice_complete', { mode, ...session })
   }
 
   completeLesson = (
@@ -99,6 +101,7 @@ class ProgressStore {
     const percent = result.total > 0 ? Math.round((result.score / result.total) * 100) : 100
     const next = withLesson(this.account, lessonId, percent)
     this.commit(withSession(next, { mode: 'learn', lesson: lessonId, ...result }))
+    track('lesson_complete', { lesson: lessonId, percent })
   }
 
   savePrefs = (prefs: Partial<Omit<PracticePrefs, 'updatedAt'>>) => {

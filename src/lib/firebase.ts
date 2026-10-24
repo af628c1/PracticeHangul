@@ -4,6 +4,7 @@ import {
   connectAuthEmulator,
   createUserWithEmailAndPassword,
   getAuth,
+  getAdditionalUserInfo,
   GoogleAuthProvider,
   onAuthStateChanged,
   sendPasswordResetEmail,
@@ -37,10 +38,12 @@ export function watchUser(callback: (user: AccountUser | null) => void) {
   return onAuthStateChanged(auth, (user) => callback(user && toAccountUser(user)))
 }
 
-export async function signInWithGoogle() {
+/** Resolves true when this created a new account */
+export async function signInWithGoogle(): Promise<boolean> {
   const provider = new GoogleAuthProvider()
   provider.setCustomParameters({ prompt: 'select_account' })
-  await signInWithPopup(auth, provider)
+  const result = await signInWithPopup(auth, provider)
+  return getAdditionalUserInfo(result)?.isNewUser ?? false
 }
 
 export async function signInWithEmail(email: string, password: string) {
