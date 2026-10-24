@@ -1,10 +1,19 @@
 import { Link } from 'react-router-dom'
+import { lessons } from '../data/lessons'
 import { useProgress } from '../hooks/useProgress'
 import AccountButton from '../components/AccountButton'
 import TabBar from '../components/TabBar'
 
 export default function HomePage() {
   const { progress, summary } = useProgress()
+  const lessonsDone = lessons.filter((l) => l.id in progress.lessons).length
+  const upNext = lessons.findIndex((l) => !(l.id in progress.lessons))
+  const learnDescription =
+    lessonsDone === 0
+      ? `Start here · ${lessons.length} lessons`
+      : upNext === -1
+        ? 'All lessons done ✓'
+        : `Up next: lesson ${upNext + 1} of ${lessons.length}`
 
   return (
     <div className="flex flex-col min-h-screen animate-fade-in">
@@ -41,6 +50,12 @@ export default function HomePage() {
 
       {/* Mode cards */}
       <div className="flex-1 flex flex-col justify-center max-w-2xl w-full mx-auto px-6 py-10 gap-4">
+        <ModeCard
+          to="/learn"
+          title="Learn Hangul"
+          description={learnDescription}
+          hangul="배움"
+        />
         <ModeCard
           to="/letters"
           title="Letter Practice"
@@ -93,7 +108,7 @@ function ModeCard({
   return (
     <Link
       to={to}
-      className="group block no-underline border-2 border-ink rounded-lg bg-paper px-6 py-5 flex items-center justify-between transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0_#1a1a1a]"
+      className="group block no-underline border-2 border-ink rounded-lg bg-paper px-6 py-5 flex items-center justify-between gap-4 transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0_#1a1a1a]"
     >
       <div>
         <div className="font-hand font-bold text-2xl text-ink">{title}</div>
@@ -101,7 +116,7 @@ function ModeCard({
       </div>
       <div
         lang="ko"
-        className="font-bold text-5xl text-ink leading-none group-hover:scale-110 transition-transform"
+        className="shrink-0 whitespace-nowrap font-bold text-5xl text-ink leading-none group-hover:scale-110 transition-transform"
       >
         {hangul}
       </div>

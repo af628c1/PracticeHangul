@@ -41,6 +41,8 @@ export interface QuizState {
 
 export type PracticeMode = 'letters' | 'words'
 
+export type SessionMode = PracticeMode | 'learn'
+
 export interface ItemStat {
   seen: number
   correct: number
@@ -48,7 +50,9 @@ export interface ItemStat {
 
 export interface SessionRecord {
   id: string
-  mode: PracticeMode
+  mode: SessionMode
+  /** Lesson id, for Learn sessions */
+  lesson?: string
   at: number
   score: number
   total: number
@@ -76,6 +80,8 @@ export interface Progress {
   /** Newest first */
   recent: SessionRecord[]
   prefs: PracticePrefs
+  /** Best score (%) for each finished Learn lesson, keyed by lesson id */
+  lessons: Record<string, number>
 }
 
 export interface AccountUser {

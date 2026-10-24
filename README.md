@@ -1,6 +1,7 @@
 # Practice Hangul
 
-Learn to read Korean with quick letter and word drills, streaks, and progress tracking.
+Learn to read Korean: bite-size lessons that teach every letter with memory tricks, then
+letter and word drills, streaks, and progress tracking.
 
 Live: https://af628c1.github.io/PracticeHangul/
 
@@ -37,6 +38,7 @@ only read and write their own data.
 - Results for every letter and word (new, learning, tricky, mastered)
 - Daily activity and the last 20 sessions
 - Practice settings (letter categories, word difficulty, question count)
+- Finished Learn lessons and their best scores
 
 Guest progress stays in the browser and moves into the account on first sign-in.
 Signed-in progress is stored in Firestore at `users/{uid}`, cached locally so practice

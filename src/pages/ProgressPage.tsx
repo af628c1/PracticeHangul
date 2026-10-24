@@ -1,9 +1,9 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import type { ItemStat, SessionRecord } from '../types'
 import { allCategories, categoryLabels, letters } from '../data/letters'
+import { lessons } from '../data/lessons'
 import { words } from '../data/words'
-import { useAuth } from '../hooks/useAuth'
 import { useProgress } from '../hooks/useProgress'
 import { addDays, dayKey, itemStatus, type ItemStatus } from '../lib/progress'
 import TopBar from '../components/TopBar'
@@ -13,10 +13,10 @@ const CALENDAR_WEEKS = 16
 
 export default function ProgressPage() {
   const navigate = useNavigate()
-  const { status, openSignIn } = useAuth()
   const { progress, summary } = useProgress()
 
   const activeDays = Object.keys(progress.activity).length
+  const lessonsDone = lessons.filter((l) => l.id in progress.lessons).length
   const streakNote =
     summary.dayStreak > 0 && !summary.practicedToday
       ? 'practice today to keep it!'
@@ -27,25 +27,6 @@ export default function ProgressPage() {
       <TopBar title="Progress" onBack={() => navigate('/')} />
 
       <div className="flex-1 max-w-2xl w-full mx-auto px-6 py-8 flex flex-col gap-10">
-        {status === 'signed-out' && (
-          <div className="flex items-center gap-4 border-2 border-dashed border-ink rounded-lg bg-paper px-5 py-4">
-            <div className="flex-1">
-              <div className="font-hand font-bold text-xl text-ink">
-                Keep your progress safe
-              </div>
-              <div className="font-hand text-lg text-muted leading-snug">
-                Sign in to back up your streak and practice on any device.
-              </div>
-            </div>
-            <button
-              onClick={openSignIn}
-              className="shrink-0 px-4 py-2 rounded-lg bg-ink text-paper font-hand font-bold text-lg border-2 border-ink hover:bg-ink-soft transition-colors cursor-pointer"
-            >
-              Sign in
-            </button>
-          </div>
-        )}
-
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <StatCard
             value={summary.dayStreak > 0 ? `🔥${summary.dayStreak}` : '0'}
@@ -74,6 +55,26 @@ export default function ProgressPage() {
           aside={`${activeDays} ${activeDays === 1 ? 'day' : 'days'} practiced`}
         >
           <ActivityCalendar activity={progress.activity} />
+        </Section>
+
+        <Section title="Lessons" aside={`${lessonsDone} of ${lessons.length} done`}>
+          <div className="flex flex-wrap gap-2">
+            {lessons.map((lesson, i) => {
+              const done = lesson.id in progress.lessons
+              return (
+                <Link
+                  key={lesson.id}
+                  to={`/learn/${lesson.id}`}
+                  title={lesson.title}
+                  className={`w-10 h-10 rounded-full border-2 border-ink flex items-center justify-center font-hand font-bold text-xl no-underline transition-transform hover:scale-110 ${
+                    done ? 'bg-ink text-paper' : 'bg-paper text-ink'
+                  }`}
+                >
+                  {i + 1}
+                </Link>
+              )
+            })}
+          </div>
         </Section>
 
         <Section
@@ -272,11 +273,11 @@ function SessionRow({ session }: { session: SessionRecord }) {
     <li className="flex items-center justify-between gap-4 px-4 py-3 font-hand">
       <div>
         <div className="font-bold text-lg text-ink">
-          {session.mode === 'letters' ? 'Letter Practice' : 'Word Practice'}
+          {sessionTitle(session)}
         </div>
         <div className="text-base text-muted">{formatWhen(session.at)}</div>
       </div>
-      <div className="text-right">
+      <div className="shrink-0 text-right whitespace-nowrap">
         <div className="font-bold text-xl text-ink">
           {session.score}/{session.total}
           <span className="text-muted font-normal text-lg"> · {percent}%</span>
@@ -287,6 +288,13 @@ function SessionRow({ session }: { session: SessionRecord }) {
       </div>
     </li>
   )
+}
+
+function sessionTitle(session: SessionRecord): string {
+  if (session.mode === 'letters') return 'Letter Practice'
+  if (session.mode === 'words') return 'Word Practice'
+  const index = lessons.findIndex((l) => l.id === session.lesson)
+  return index === -1 ? 'Lesson' : `Lesson ${index + 1}: ${lessons[index].title}`
 }
 
 function formatWhen(timestamp: number): string {

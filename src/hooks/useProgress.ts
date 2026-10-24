@@ -16,6 +16,7 @@ export function useProgress() {
     recordAnswer: progressStore.recordAnswer,
     recordStreak: progressStore.recordStreak,
     recordSession: progressStore.recordSession,
+    completeLesson: progressStore.completeLesson,
     savePrefs: progressStore.savePrefs,
   }
 }

@@ -7,6 +7,7 @@ import {
   sameProgress,
   withAnswer,
   withBestStreak,
+  withLesson,
   withPrefs,
   withSession,
 } from './progress'
@@ -89,6 +90,15 @@ class ProgressStore {
     session: { score: number; total: number; bestStreak: number },
   ) => {
     this.commit(withSession(this.account, { mode, ...session }))
+  }
+
+  completeLesson = (
+    lessonId: string,
+    result: { score: number; total: number; bestStreak: number },
+  ) => {
+    const percent = result.total > 0 ? Math.round((result.score / result.total) * 100) : 100
+    const next = withLesson(this.account, lessonId, percent)
+    this.commit(withSession(next, { mode: 'learn', lesson: lessonId, ...result }))
   }
 
   savePrefs = (prefs: Partial<Omit<PracticePrefs, 'updatedAt'>>) => {

@@ -33,6 +33,7 @@ export function emptyProgress(): Progress {
     words: {},
     recent: [],
     prefs: defaultPrefs,
+    lessons: {},
   }
 }
 
@@ -42,7 +43,8 @@ export function hasProgress(p: Progress): boolean {
     p.sessions > 0 ||
     p.bestStreak > 0 ||
     Object.keys(p.letters).length > 0 ||
-    Object.keys(p.words).length > 0
+    Object.keys(p.words).length > 0 ||
+    Object.keys(p.lessons).length > 0
   )
 }
 
@@ -163,13 +165,21 @@ export function withSession(
   session: Omit<SessionRecord, 'id' | 'at'>,
   now: number = Date.now(),
 ): Progress {
-  const record: SessionRecord = { id: newId(), at: now, ...session }
+  const { lesson, ...rest } = session
+  // Firestore rejects undefined fields, so only Learn sessions carry a lesson
+  const record: SessionRecord = { id: newId(), at: now, ...rest, ...(lesson ? { lesson } : {}) }
   return {
     ...p,
     sessions: p.sessions + 1,
     bestStreak: Math.max(p.bestStreak, session.bestStreak),
     recent: [record, ...p.recent].slice(0, RECENT_LIMIT),
   }
+}
+
+/** Marks a Learn lesson finished, keeping the best score */
+export function withLesson(p: Progress, lessonId: string, percent: number): Progress {
+  const best = Math.max(p.lessons[lessonId] ?? 0, percent)
+  return { ...p, lessons: { ...p.lessons, [lessonId]: best } }
 }
 
 export function withPrefs(
@@ -251,6 +261,8 @@ function merge(a: Progress, b: Progress, combine: Combine): Progress {
     words: mergeItems(a.words, b.words, combine),
     recent: mergeRecent(a.recent, b.recent),
     prefs: newerPrefs(a.prefs, b.prefs),
+    // Best scores, so never summed
+    lessons: mergeCounts(a.lessons, b.lessons, Math.max),
   }
 }
 
@@ -326,10 +338,11 @@ function parseRecent(raw: unknown): SessionRecord[] {
   const sessions: SessionRecord[] = []
   for (const s of raw) {
     if (!isRecord(s) || typeof s.id !== 'string') continue
-    if (s.mode !== 'letters' && s.mode !== 'words') continue
+    if (s.mode !== 'letters' && s.mode !== 'words' && s.mode !== 'learn') continue
     sessions.push({
       id: s.id,
       mode: s.mode,
+      ...(typeof s.lesson === 'string' && s.lesson ? { lesson: s.lesson } : {}),
       at: count(s.at),
       score: count(s.score),
       total: count(s.total),
@@ -337,6 +350,18 @@ function parseRecent(raw: unknown): SessionRecord[] {
     })
   }
   return sortRecent(sessions)
+}
+
+function parseLessons(raw: unknown): Record<string, number> {
+  const out: Record<string, number> = {}
+  if (!isRecord(raw)) return out
+  for (const [key, value] of Object.entries(raw)) {
+    // A 0% score still counts as finished, so keep zeros
+    if (/^[a-z0-9-]{1,40}$/.test(key) && typeof value === 'number') {
+      out[key] = Math.min(count(value), 100)
+    }
+  }
+  return out
 }
 
 function parsePrefs(raw: unknown): PracticePrefs {
@@ -368,5 +393,6 @@ export function parseProgress(raw: unknown): Progress {
     words: parseItems(raw.words, raw.wordsSeen),
     recent: parseRecent(raw.recent),
     prefs: parsePrefs(raw.prefs),
+    lessons: parseLessons(raw.lessons),
   }
 }
