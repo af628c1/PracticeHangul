@@ -1,4 +1,4 @@
-import type { HangulLetter } from '../types'
+import type { HangulLetter, LetterCategory } from '../types'
 
 export const letters: HangulLetter[] = [
   // Basic Consonants (14)
@@ -48,6 +48,13 @@ export const letters: HangulLetter[] = [
   { hangul: 'ㅞ', romanization: 'we', name: 'we', category: 'compound-vowel' },
   { hangul: 'ㅟ', romanization: 'wi', name: 'wi', category: 'compound-vowel' },
   { hangul: 'ㅢ', romanization: 'ui', name: 'ui', category: 'compound-vowel' },
+]
+
+export const allCategories: LetterCategory[] = [
+  'basic-consonant',
+  'double-consonant',
+  'basic-vowel',
+  'compound-vowel',
 ]
 
 export const categoryLabels: Record<string, string> = {

@@ -1,20 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { LetterCategory, QuestionCount } from '../types'
-import { categoryLabels } from '../data/letters'
+import { allCategories, categoryLabels } from '../data/letters'
 import { useLetterQuiz } from '../hooks/useLetterQuiz'
-import { useStats } from '../hooks/useStats'
+import { useProgress } from '../hooks/useProgress'
 import HangulDisplay from '../components/HangulDisplay'
 import ChoiceButton from '../components/ChoiceButton'
 import ProgressBar from '../components/ProgressBar'
 import ResultScreen from '../components/ResultScreen'
-
-const allCategories: LetterCategory[] = [
-  'basic-consonant',
-  'double-consonant',
-  'basic-vowel',
-  'compound-vowel',
-]
+import TopBar from '../components/TopBar'
 
 const questionCounts: { label: string; value: QuestionCount }[] = [
   { label: '10', value: 10 },
@@ -25,13 +19,15 @@ const questionCounts: { label: string; value: QuestionCount }[] = [
 export default function LetterPracticePage() {
   const navigate = useNavigate()
   const { state, start, selectAnswer, finish, restart } = useLetterQuiz()
-  const { recordLetter, recordStreak } = useStats()
+  const { progress, recordAnswer, recordStreak, recordSession, savePrefs } =
+    useProgress()
 
-  const [selectedCategories, setSelectedCategories] = useState<LetterCategory[]>([
-    'basic-consonant',
-    'basic-vowel',
-  ])
-  const [selectedCount, setSelectedCount] = useState<QuestionCount>(10)
+  const [selectedCategories, setSelectedCategories] = useState<LetterCategory[]>(
+    () => progress.prefs.letterCategories,
+  )
+  const [selectedCount, setSelectedCount] = useState<QuestionCount>(
+    () => progress.prefs.letterCount,
+  )
 
   const toggleCategory = (cat: LetterCategory) => {
     setSelectedCategories((prev) => {
@@ -43,17 +39,33 @@ export default function LetterPracticePage() {
     })
   }
 
-  // Track stats
+  // Track progress
+  const latestAnswer = state.answers.at(-1)
   useEffect(() => {
-    if (state.status === 'active' || state.status === 'reviewing') {
-      const q = state.questions[state.currentIndex]
-      if (q) recordLetter(q.prompt)
+    if (latestAnswer) {
+      recordAnswer('letters', latestAnswer.prompt, latestAnswer.correct)
     }
-  }, [state.status, state.currentIndex, state.questions, recordLetter])
+  }, [latestAnswer, recordAnswer])
 
   useEffect(() => {
     if (state.bestStreak > 0) recordStreak(state.bestStreak)
   }, [state.bestStreak, recordStreak])
+
+  const finished = state.status === 'finished'
+  useEffect(() => {
+    if (finished && state.totalAnswered > 0) {
+      recordSession('letters', {
+        score: state.score,
+        total: state.totalAnswered,
+        bestStreak: state.bestStreak,
+      })
+    }
+  }, [finished, state.score, state.totalAnswered, state.bestStreak, recordSession])
+
+  const handleStart = () => {
+    savePrefs({ letterCategories: selectedCategories, letterCount: selectedCount })
+    start(selectedCategories, selectedCount)
+  }
 
   // Setup screen
   if (state.status === 'setup') {
@@ -108,7 +120,7 @@ export default function LetterPracticePage() {
           </div>
 
           <button
-            onClick={() => start(selectedCategories, selectedCount)}
+            onClick={handleStart}
             className="mt-4 py-4 rounded-lg bg-k-red text-paper font-hand font-bold text-2xl border-2 border-ink shadow-[4px_4px_0_#1a1a1a] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#1a1a1a] transition-all cursor-pointer"
           >
             Start Practice →
@@ -225,21 +237,6 @@ export default function LetterPracticePage() {
           </button>
         )}
       </div>
-    </div>
-  )
-}
-
-function TopBar({ title, onBack }: { title: string; onBack: () => void }) {
-  return (
-    <div className="flex items-center justify-between px-4 py-3 border-b border-line bg-paper">
-      <button
-        onClick={onBack}
-        className="font-hand text-lg text-muted hover:text-ink transition-colors cursor-pointer"
-      >
-        ← Back
-      </button>
-      <div className="font-hand font-bold text-xl text-ink">{title}</div>
-      <div className="w-12" />
     </div>
   )
 }

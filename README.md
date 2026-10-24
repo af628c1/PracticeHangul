@@ -1,73 +1,59 @@
-# React + TypeScript + Vite
+# Practice Hangul
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Learn to read Korean with quick letter and word drills, streaks, and progress tracking.
 
-Currently, two official plugins are available:
+Live: https://af628c1.github.io/PracticeHangul/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Development
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```sh
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Accounts & cloud save
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Without any setup the app works as a guest app and saves progress in the browser. To turn on
+sign-in (Google or email) and cloud saving, connect a free Firebase project:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Create a project at [console.firebase.google.com](https://console.firebase.google.com),
+   then add a **Web app** and note its `apiKey`, `authDomain`, `projectId` and `appId`.
+2. **Authentication → Sign-in method**: enable **Google** and **Email/Password**.
+3. **Authentication → Settings → Authorized domains**: add `af628c1.github.io`.
+4. **Firestore Database → Create database** (production mode). In its **Rules** tab, paste
+   the contents of [`firestore.rules`](firestore.rules) and publish.
+5. On GitHub, go to **Settings → Secrets and variables → Actions → Variables** and add
+   `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID` and
+   `VITE_FIREBASE_APP_ID`. Then re-run the **Deploy to GitHub Pages** workflow.
+
+For local development, copy `.env.example` to `.env.local` and fill in the same values.
+These are public identifiers, not secrets: the Firestore rules make sure each learner can
+only read and write their own data.
+
+### What gets saved
+
+- Day streak (current and longest) and best answers-in-a-row streak
+- Total answers, accuracy, and finished sessions
+- Results for every letter and word (new, learning, tricky, mastered)
+- Daily activity and the last 20 sessions
+- Practice settings (letter categories, word difficulty, question count)
+
+Guest progress stays in the browser and moves into the account on first sign-in.
+Signed-in progress is stored in Firestore at `users/{uid}`, cached locally so practice
+keeps working offline, and merged when the device reconnects.
+
+### Local emulators (optional)
+
+```sh
+npx firebase-tools emulators:start --only auth,firestore --project demo-practice-hangul
+```
+
+Then run `npm run dev` with this `.env.local`:
+
+```sh
+VITE_FIREBASE_API_KEY=demo-key
+VITE_FIREBASE_AUTH_DOMAIN=demo-practice-hangul.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=demo-practice-hangul
+VITE_FIREBASE_APP_ID=demo-app
+VITE_FIREBASE_EMULATORS=true
 ```

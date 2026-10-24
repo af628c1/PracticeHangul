@@ -87,7 +87,10 @@ function reducer(state: QuizState, action: Action): QuizState {
         score: correct ? state.score + 1 : state.score,
         streak: newStreak,
         bestStreak: Math.max(state.bestStreak, newStreak),
-        answers: [...state.answers, { correct, userAnswer: action.answer }],
+        answers: [
+          ...state.answers,
+          { prompt: question.prompt, correct, userAnswer: action.answer },
+        ],
         status: 'reviewing',
         totalAnswered: state.totalAnswered + 1,
       }

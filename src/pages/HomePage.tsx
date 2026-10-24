@@ -1,13 +1,18 @@
 import { Link } from 'react-router-dom'
-import { useStats } from '../hooks/useStats'
+import { useProgress } from '../hooks/useProgress'
+import AccountButton from '../components/AccountButton'
+import TabBar from '../components/TabBar'
 
 export default function HomePage() {
-  const { lettersSeen, wordsSeen, bestStreak } = useStats()
+  const { progress, summary } = useProgress()
 
   return (
     <div className="flex flex-col min-h-screen animate-fade-in">
       {/* Hero */}
-      <div className="bg-ink text-paper py-16 sm:py-24 px-6 flex flex-col items-center justify-center gap-2">
+      <div className="relative bg-ink text-paper py-16 sm:py-24 px-6 flex flex-col items-center justify-center gap-2">
+        <div className="absolute top-4 right-4">
+          <AccountButton variant="dark" />
+        </div>
         <h1
           lang="ko"
           className="font-hand font-bold text-8xl sm:text-9xl leading-none"
@@ -21,10 +26,14 @@ export default function HomePage() {
 
       {/* Stats strip */}
       <div className="flex border-b-2 border-line bg-paper">
-        <Stat value={lettersSeen.toString()} label="letters" />
-        <Stat value={wordsSeen.toString()} label="words" separator />
         <Stat
-          value={bestStreak > 0 ? `🔥${bestStreak}` : '—'}
+          value={summary.dayStreak > 0 ? summary.dayStreak.toString() : '—'}
+          label="day streak"
+        />
+        <Stat value={summary.lettersPracticed.toString()} label="letters" separator />
+        <Stat value={summary.wordsPracticed.toString()} label="words" separator />
+        <Stat
+          value={progress.bestStreak > 0 ? `🔥${progress.bestStreak}` : '—'}
           label="best streak"
           separator
         />
@@ -46,12 +55,7 @@ export default function HomePage() {
         />
       </div>
 
-      {/* Footer / tab-bar style */}
-      <div className="flex border-t border-line bg-paper">
-        <TabItem icon="◉" label="Practice" active />
-        <TabItem icon="◎" label="Progress" />
-        <TabItem icon="○" label="About" />
-      </div>
+      <TabBar />
     </div>
   )
 }
@@ -102,26 +106,5 @@ function ModeCard({
         {hangul}
       </div>
     </Link>
-  )
-}
-
-function TabItem({
-  icon,
-  label,
-  active,
-}: {
-  icon: string
-  label: string
-  active?: boolean
-}) {
-  return (
-    <div
-      className={`flex-1 py-3 text-center font-hand ${
-        active ? 'text-ink font-bold' : 'text-muted-soft'
-      }`}
-    >
-      <div className="text-lg">{icon}</div>
-      <div className="text-sm">{label}</div>
-    </div>
   )
 }
