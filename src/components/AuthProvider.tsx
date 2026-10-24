@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { AuthContext, type AuthContextValue } from '../hooks/useAuth'
 import { firebaseConfig } from '../lib/firebaseConfig'
 import { progressStore } from '../lib/progressStore'
+import { track } from '../lib/track'
 import { storeAccount, storedAccount } from '../lib/storage'
 import LoginDialog from './LoginDialog'
 
@@ -55,15 +56,18 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       openSignIn: () => setDialogOpen(true),
       signInWithGoogle: async () => {
         const firebase = await loadFirebase()
-        await firebase.signInWithGoogle()
+        const isNew = await firebase.signInWithGoogle()
+        track(isNew ? 'sign_up' : 'login', { method: 'google' })
       },
       signInWithEmail: async (email, password) => {
         const firebase = await loadFirebase()
         await firebase.signInWithEmail(email, password)
+        track('login', { method: 'email' })
       },
       createAccount: async (name, email, password) => {
         const firebase = await loadFirebase()
         const created = await firebase.createAccount(name, email, password)
+        track('sign_up', { method: 'email' })
         // Profile updates don't re-fire the auth listener, so pick up the name here
         storeAccount(created)
         setUser(created)
