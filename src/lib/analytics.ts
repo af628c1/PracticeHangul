@@ -2,7 +2,7 @@
 import { initializeAnalytics, isSupported, logEvent, type Analytics } from 'firebase/analytics'
 import { app } from './firebase'
 
-// Page views are sent by hand, since the router lives in the URL hash
+// Page views are sent by hand on each route change (it's a single-page app)
 const analytics: Promise<Analytics | null> = isSupported()
   .then((ok) => (ok ? initializeAnalytics(app, { config: { send_page_view: false } }) : null))
   .catch(() => null)
