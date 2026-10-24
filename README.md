@@ -14,20 +14,16 @@ npm run dev
 
 ## Accounts & cloud save
 
-Without any setup the app works as a guest app and saves progress in the browser. To turn on
-sign-in (Google or email) and cloud saving, connect a free Firebase project:
+Sign-in (Google or email) and cloud saving use the Firebase project `practicehangul-58835`,
+whose web config lives in [`src/lib/firebaseConfig.ts`](src/lib/firebaseConfig.ts). The
+project needs:
 
-1. Create a project at [console.firebase.google.com](https://console.firebase.google.com),
-   then add a **Web app** and note its `apiKey`, `authDomain`, `projectId` and `appId`.
-2. **Authentication → Sign-in method**: enable **Google** and **Email/Password**.
-3. **Authentication → Settings → Authorized domains**: add `af628c1.github.io`.
-4. **Firestore Database → Create database** (production mode). In its **Rules** tab, paste
-   the contents of [`firestore.rules`](firestore.rules) and publish.
-5. On GitHub, go to **Settings → Secrets and variables → Actions → Variables** and add
-   `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID` and
-   `VITE_FIREBASE_APP_ID`. Then re-run the **Deploy to GitHub Pages** workflow.
+1. **Authentication → Sign-in method**: **Google** and **Email/Password** enabled.
+2. **Authentication → Settings → Authorized domains**: `af628c1.github.io` added.
+3. **Firestore Database** created (production mode), with the contents of
+   [`firestore.rules`](firestore.rules) published in its **Rules** tab.
 
-For local development, copy `.env.example` to `.env.local` and fill in the same values.
+`VITE_FIREBASE_*` variables (see `.env.example`) override the built-in config.
 These are public identifiers, not secrets: the Firestore rules make sure each learner can
 only read and write their own data.
 
