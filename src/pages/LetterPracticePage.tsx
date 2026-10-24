@@ -85,7 +85,7 @@ export default function LetterPracticePage() {
                   <button
                     key={cat}
                     onClick={() => toggleCategory(cat)}
-                    className={`py-3 px-4 rounded-lg text-left font-hand text-lg border-2 transition-all cursor-pointer ${
+                    className={`py-3 px-4 rounded-lg text-left font-hand text-base border-2 transition-all cursor-pointer ${
                       active
                         ? 'border-ink bg-ink text-paper'
                         : 'border-gray-300 bg-paper text-ink hover:border-ink'
