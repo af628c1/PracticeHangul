@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/PracticeHangul/',
+  // Served from the root of practicehangul.com
+  base: '/',
   plugins: [react(), tailwindcss()],
 })

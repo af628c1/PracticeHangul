@@ -3,7 +3,7 @@
 Learn to read Korean: bite-size lessons that teach every letter with memory tricks, then
 letter and word drills, streaks, and progress tracking.
 
-Live: https://af628c1.github.io/PracticeHangul/
+Live: https://practicehangul.com
 
 ## Development
 
@@ -19,7 +19,7 @@ whose web config lives in [`src/lib/firebaseConfig.ts`](src/lib/firebaseConfig.t
 project needs:
 
 1. **Authentication → Sign-in method**: **Google** and **Email/Password** enabled.
-2. **Authentication → Settings → Authorized domains**: `af628c1.github.io` added.
+2. **Authentication → Settings → Authorized domains**: `practicehangul.com` and `www.practicehangul.com` added.
 3. **Firestore Database** created (production mode), with the contents of
    [`firestore.rules`](firestore.rules) published in its **Rules** tab.
 
